@@ -5,12 +5,19 @@ import { RotateCw } from 'lucide-react';
 import { useFormStatus } from 'react-dom';
 import { Button } from '@/components/ui/button';
 
+type btnSize = 'default' | 'lg' | 'sm';
+
 type SubmitButtonProps = {
   className?: string;
   text?: string;
+  size?: btnSize;
 };
 
-const Buttons = ({ className = '', text = 'submit' }: SubmitButtonProps) => {
+const SubmitButton = ({
+  className = '',
+  text = 'submit',
+  size = 'lg',
+}: SubmitButtonProps) => {
   const { pending } = useFormStatus();
 
   return (
@@ -18,7 +25,7 @@ const Buttons = ({ className = '', text = 'submit' }: SubmitButtonProps) => {
       disabled={pending}
       type='submit'
       className={`capitalize cursor-pointer ${className}`}
-      size='lg'
+      size={size}
     >
       {pending ? (
         <>
@@ -32,4 +39,4 @@ const Buttons = ({ className = '', text = 'submit' }: SubmitButtonProps) => {
   );
 };
 
-export default Buttons;
+export default SubmitButton;
