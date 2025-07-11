@@ -123,7 +123,7 @@ export const updateProfileImageAction = async (
     const user = await getAuthUser();
     const image = formData.get('image') as File;
     const validatedFields = validateWithZodSchema(ImageSchema, { image });
-    console.log('first', validatedFields);
+
     const fullPath = await uploadImage(validatedFields.image);
     await db.profile.update({
       where: {
@@ -134,7 +134,7 @@ export const updateProfileImageAction = async (
       },
     });
 
-    console.log('second', validatedFields);
+    revalidatePath('/profile');
     return { message: 'Profile image updated successfully' };
   } catch (error) {
     console.log('Error updating profile image:', error);
