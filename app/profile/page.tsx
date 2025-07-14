@@ -1,4 +1,4 @@
-import Buttons from '@/components/form/Buttons';
+import { SubmitButton } from '@/components/form/Buttons';
 import FormContainer from '@/components/form/FormContainer';
 import FormInput from '@/components/form/FormInput';
 import ImageInputContainer from '@/components/form/ImageInputContainer';
@@ -6,7 +6,7 @@ import {
   updateProfileAction,
   fetchProfile,
   updateProfileImageAction,
-} from '@/utils/action';
+} from '@/utils/actions';
 import { currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 
@@ -44,7 +44,7 @@ const UpdateProfile = async () => {
               defaultValue={profile.username}
             />
           </div>
-          <Buttons text={'Update Profile'} className='mt-8' />
+          <SubmitButton text={'Update Profile'} className='mt-8' />
         </FormContainer>
       </div>
     </section>

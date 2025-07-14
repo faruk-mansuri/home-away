@@ -1,13 +1,31 @@
-import { Button } from '@/components/ui/button';
+import LoadingCards from '@/components/card/LoadingCards';
+import CategoriesList from '@/components/home/CategoriesList';
+import PropertiesContainer from '@/components/home/PropertiesContainer';
+import { Suspense } from 'react';
 
-function HomePage() {
+import db from '@/utils/db';
+
+async function HomePage({
+  searchParams,
+}: {
+  searchParams: { category?: string; search?: string };
+}) {
+  const searchParamsData = await searchParams;
+
+  const properties = await db.property.findMany({});
   return (
-    <div>
-      <h1 className='text-3xl'>HomePage</h1>
-      <Button variant='link' size='lg' className='capitalize m-8'>
-        Click me
-      </Button>
-    </div>
+    <section>
+      <CategoriesList
+        category={searchParamsData.category}
+        search={searchParamsData.search}
+      />
+      <Suspense fallback={<LoadingCards />}>
+        <PropertiesContainer
+          category={searchParamsData.category}
+          search={searchParamsData.search}
+        />
+      </Suspense>
+    </section>
   );
 }
 
