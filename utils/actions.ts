@@ -262,42 +262,24 @@ export const toggleFavoriteAction = async (prevState: {
   }
 };
 
-// export const toggleFavoriteAction = async (
-//   prevState: any,
-//   formData: FormData
-// ): Promise<{ message: string }> => {
-//   try {
-//     const user = await getAuthUser();
-//     const propertyId = formData.get('propertyId') as string;
+export const fetchFavorites = async () => {
+  const user = await getAuthUser();
+  const favorites = await db.favorite.findMany({
+    where: { profileId: user.id },
+    select: {
+      id: true,
+      property: {
+        select: {
+          id: true,
+          name: true,
+          tagline: true,
+          image: true,
+          country: true,
+          price: true,
+        },
+      },
+    },
+  });
 
-//     if (!propertyId) {
-//       throw new Error('Property ID is required');
-//     }
-
-//     const favorite = await db.favorite.findFirst({
-//       where: {
-//         propertyId,
-//         profileId: user.id,
-//       },
-//     });
-
-//     if (favorite) {
-//       await db.favorite.delete({
-//         where: {
-//           id: favorite.id,
-//         },
-//       });
-//       return { message: 'Property removed from favorites' };
-//     } else {
-//       await db.favorite.create({
-//         data: {
-//           propertyId,
-//           profileId: user.id,
-//         },
-//       });
-//       return { message: 'Property added to favorites' };
-//     }
-//   } catch (error) {
-//     return renderError(error);
-//   }
-// }
+  return favorites.map((fav) => fav.property);
+};
