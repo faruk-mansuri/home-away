@@ -1,4 +1,4 @@
-import { fetchProfileImage } from '@/utils/action';
+import { fetchProfileImage } from '@/utils/actions';
 import { User } from 'lucide-react';
 import React from 'react';
 
