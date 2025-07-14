@@ -46,6 +46,7 @@
 
 'use client';
 
+import 'leaflet/dist/leaflet.css';
 import { useEffect, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { findCountryByCode } from '@/utils/countries';
@@ -68,7 +69,6 @@ const PropertyMap = ({ countryCode }: { countryCode: string }) => {
       const { icon } = await import('leaflet');
 
       // Import CSS
-      // await import('leaflet/dist/leaflet.css');
 
       const iconUrl =
         'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon-2x.png';
