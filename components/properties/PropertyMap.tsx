@@ -68,8 +68,6 @@ const PropertyMap = ({ countryCode }: { countryCode: string }) => {
       );
       const { icon } = await import('leaflet');
 
-      // Import CSS
-
       const iconUrl =
         'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon-2x.png';
       const markerIcon = icon({
