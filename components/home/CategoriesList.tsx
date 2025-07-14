@@ -1,4 +1,4 @@
-import { categories, CategoryLabel } from '@/utils/categories';
+import { categories } from '@/utils/categories';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
 import Link from 'next/link';
 

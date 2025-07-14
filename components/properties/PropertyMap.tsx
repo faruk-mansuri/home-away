@@ -54,6 +54,7 @@ import Title from './Title';
 
 const PropertyMap = ({ countryCode }: { countryCode: string }) => {
   const [isClient, setIsClient] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [mapComponents, setMapComponents] = useState<any>(null);
 
   useEffect(() => {

@@ -25,7 +25,7 @@ const DynamicMap = dynamic(
 const SinglePropertyPage = async ({
   params,
 }: {
-  params: { propertyId: string };
+  params: Promise<{ propertyId: string }>;
 }) => {
   const { propertyId } = await params;
   const property = await fetchPropertyDetailsById(propertyId);
