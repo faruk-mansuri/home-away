@@ -93,3 +93,18 @@ export const propertySchema = z.object({
   }),
   amenities: z.string(),
 });
+
+export const createReviewSchema = z.object({
+  propertyId: z.string(),
+  rating: z.coerce.number().int().min(1).max(5, {
+    message: 'Rating must be between 1 and 5.',
+  }),
+  comment: z
+    .string()
+    .min(10, {
+      message: 'Comment must be at least 10 characters long.',
+    })
+    .max(1000, {
+      message: 'Comment must be less than 1000 characters.',
+    }),
+});
