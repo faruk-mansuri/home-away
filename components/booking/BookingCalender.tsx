@@ -38,6 +38,7 @@ const BookingCalendar = () => {
     useProperty.setState({
       range,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [range]);
 
   return (

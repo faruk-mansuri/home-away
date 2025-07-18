@@ -12,8 +12,6 @@ const markerIcon = icon({
 import { findCountryByCode } from '@/utils/countries';
 import CountryFlagAndName from '../card/CountryFlagAndName';
 import Title from './Title';
-import dynamic from 'next/dynamic';
-import { Skeleton } from '../ui/skeleton';
 
 const PropertyMap = ({ countryCode }: { countryCode: string }) => {
   const defaultLocation = [51.505, -0.09] as [number, number];
