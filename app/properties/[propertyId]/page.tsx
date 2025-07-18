@@ -1,7 +1,6 @@
 import FavoriteToggleButton from '@/components/card/FavoriteToggleButton';
 import PropertyRating from '@/components/card/PropertyRating';
 import Amenities from '@/components/properties/Amenities';
-import BookingCalender from '@/components/properties/BookingCalender';
 import BreadCrumbs from '@/components/properties/BreadCrumbs';
 import Description from '@/components/properties/Description';
 import ImageContainer from '@/components/properties/ImageContainer';
@@ -11,19 +10,27 @@ import UserInfo from '@/components/properties/UserInfo';
 import PropertyReviews from '@/components/reviews/PropertyReviews';
 import SubmitReview from '@/components/reviews/SubmitReview';
 import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
 import { fetchPropertyDetailsById, findExistingReview } from '@/utils/actions';
-import dynamic from 'next/dynamic';
 import { redirect } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
 
-const DynamicMap = dynamic(
-  () => import('@/components/properties/PropertyMap'),
-  {
-    // ssr: false,
-    loading: () => <Skeleton className='h-[400px] w-full' />,
-  }
-);
+import DynamicPropertyMap from '@/components/properties/DynamicPropertyMap';
+// const DynamicMap = dynamic(
+//   () => import('@/components/properties/PropertyMap'),
+//   {
+//     // ssr: false,
+//     loading: () => <Skeleton className='h-[400px] w-full' />,
+//   }
+// );
+
+import DynamicBookingWrapper from '@/components/booking/DynamicBookingWrapper';
+// const DynamicBookingWrapper = dynamic(
+//   () => import('@/components/booking/BookingWrapper'),
+//   {
+//     // ssr: false,
+//     loading: () => <Skeleton className='h-[200px] w-full' />,
+//   }
+// );
 
 const SinglePropertyPage = async ({
   params,
@@ -45,6 +52,8 @@ const SinglePropertyPage = async ({
     image,
     amenities,
     country,
+    price,
+    bookings,
   } = property;
   const details = { baths, bedrooms, beds, guests };
 
@@ -84,11 +93,15 @@ const SinglePropertyPage = async ({
           <Separator className='mt-4' />
           <Description description={description} />
           <Amenities amenities={amenities} />
-          <DynamicMap countryCode={country} />
+          <DynamicPropertyMap countryCode={country} />
         </div>
 
         <div className='lg:col-span-4 flex flex-col items-center'>
-          <BookingCalender />
+          <DynamicBookingWrapper
+            propertyId={propertyId}
+            price={price}
+            bookings={bookings}
+          />
         </div>
       </section>
 

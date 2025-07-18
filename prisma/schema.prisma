@@ -9,6 +9,9 @@ datasource db {
 }
 
 // npx prisma format - to format prisma schema
+// npx prisma format
+// npx prisma generate
+// npx prisma db push
 
 model Profile {
   id           String     @id @default(uuid())
@@ -23,6 +26,7 @@ model Profile {
   updatedAt    DateTime   @updatedAt
   favorites    Favorite[]
   reviews      Review[]
+  bookings     Booking[]
 }
 
 model Property {
@@ -45,6 +49,7 @@ model Property {
   profile     Profile    @relation(fields: [profileId], references: [clerkId], onDelete: Cascade)
   favorites   Favorite[]
   reviews     Review[]
+  bookings    Booking[]
 }
 
 model Favorite {
@@ -69,4 +74,19 @@ model Review {
   comment    String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+}
+
+model Booking {
+  id            String   @id @default(uuid())
+  profileId     String
+  profile       Profile  @relation(fields: [profileId], references: [clerkId], onDelete: Cascade)
+  propertyId    String
+  property      Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  orderTotal    Int
+  totalNights   Int
+  checkIn       DateTime
+  checkOut      DateTime
+  paymentStatus Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
