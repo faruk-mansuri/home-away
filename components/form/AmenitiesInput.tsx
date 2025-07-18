@@ -1,12 +1,30 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { amenities, Amenity } from '@/utils/amenities';
 import { Checkbox } from '@/components/ui/checkbox';
 
 const AmenitiesInput = ({ defaultValue }: { defaultValue?: Amenity[] }) => {
+  const amenitiesWithIcons = defaultValue?.map(({ name, selected }) => {
+    return {
+      name,
+      selected,
+      icon: amenities.find((amenity) => amenity.name === name)!.icon,
+    };
+  });
   const [selectedAmenities, setSelectedAmenities] = useState<Amenity[]>(
-    defaultValue || amenities
+    amenitiesWithIcons || amenities
   );
+
+  useEffect(() => {
+    if (defaultValue) {
+      const updated = defaultValue.map(({ name, selected }) => ({
+        name,
+        selected,
+        icon: amenities.find((a) => a.name === name)!.icon,
+      }));
+      setSelectedAmenities(updated);
+    }
+  }, [defaultValue]);
 
   const handleChange = (amenity: Amenity) => {
     setSelectedAmenities((prev) =>

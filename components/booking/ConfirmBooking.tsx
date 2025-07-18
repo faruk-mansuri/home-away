@@ -9,7 +9,6 @@ import { createBookingAction } from '@/utils/actions';
 const ConfirmBooking = () => {
   const { userId } = useAuth();
   const { propertyId, range } = useProperty((state) => state);
-  const { from, to } = range as { from: Date; to: Date };
   const checkIn = range?.from as Date;
   const checkOut = range?.to as Date;
 
