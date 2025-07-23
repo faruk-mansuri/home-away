@@ -12,6 +12,8 @@ datasource db {
 // npx prisma format
 // npx prisma generate
 // npx prisma db push
+// select: Must explicitly list every field you want
+// include: Gets all model fields automatically, plus relations
 
 model Profile {
   id           String     @id @default(uuid())
