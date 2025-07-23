@@ -209,6 +209,8 @@ export const fetchProperties = async ({
       price: true,
     },
 
+    take: 10, // Limit to 10 properties
+
     orderBy: {
       createdAt: 'desc',
     },
