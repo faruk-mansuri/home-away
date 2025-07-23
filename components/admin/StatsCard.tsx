@@ -1,7 +1,13 @@
 import React from 'react';
 import { Card, CardHeader } from '../ui/card';
 
-const StatsCard = ({ title, value }: { title: string; value: number }) => {
+const StatsCard = ({
+  title,
+  value,
+}: {
+  title: string;
+  value: number | string;
+}) => {
   return (
     <Card className='bg-muted'>
       <CardHeader className='flex flex-row justify-between items-center'>
