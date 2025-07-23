@@ -1,6 +1,7 @@
 'use client';
 import axios from 'axios';
 import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import {
   EmbeddedCheckoutProvider,
@@ -11,7 +12,8 @@ const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string
 );
 
-const CheckoutPage = () => {
+// Separate component that uses useSearchParams
+const CheckoutContent = () => {
   const searchParams = useSearchParams();
   const bookingId = searchParams.get('bookingId');
 
@@ -23,10 +25,19 @@ const CheckoutPage = () => {
   const options = { fetchClientSecret };
 
   return (
+    <EmbeddedCheckoutProvider stripe={stripePromise} options={options}>
+      <EmbeddedCheckout />
+    </EmbeddedCheckoutProvider>
+  );
+};
+
+// Main page component with Suspense
+const CheckoutPage = () => {
+  return (
     <div id='checkout'>
-      <EmbeddedCheckoutProvider stripe={stripePromise} options={options}>
-        <EmbeddedCheckout />
-      </EmbeddedCheckoutProvider>
+      <Suspense fallback={null}>
+        <CheckoutContent />
+      </Suspense>
     </div>
   );
 };
