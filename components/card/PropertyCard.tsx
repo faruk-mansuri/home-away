@@ -8,7 +8,17 @@ import { formatCurrency } from '@/utils/format';
 import type { PropertyCardProps } from '@/utils/types';
 
 const PropertyCard = ({ property }: { property: PropertyCardProps }) => {
-  const { name, image, country, price, id: propertyId, tagline } = property;
+  const {
+    name,
+    image,
+    country,
+    price,
+    id: propertyId,
+    tagline,
+    favoriteId,
+    reviewCount,
+    rating,
+  } = property;
 
   return (
     <article className='group relative'>
@@ -28,7 +38,7 @@ const PropertyCard = ({ property }: { property: PropertyCardProps }) => {
             {name.substring(0, 30)}
           </h3>
           {/* property rating */}
-          <PropertyRating propertyId={propertyId} inPage={false} />
+          <PropertyRating count={reviewCount} rating={rating} inPage={false} />
         </div>
         <p className='text-sm mt-1 text-accent-foreground'>
           {tagline.substring(0, 40)}
@@ -46,8 +56,7 @@ const PropertyCard = ({ property }: { property: PropertyCardProps }) => {
 
       <div className='absolute top-5 right-5 z-5'>
         {/* favorite toggle */}
-
-        <FavoriteToggleButton propertyId={propertyId} />
+        <FavoriteToggleButton favoriteId={favoriteId} propertyId={propertyId} />
       </div>
     </article>
   );

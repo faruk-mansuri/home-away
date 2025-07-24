@@ -1,7 +1,7 @@
 import { fetchProperties } from '@/utils/actions';
-import PropertiesList from './PropertiesList';
 import EmptyList from './EmptyList';
 import type { PropertyCardProps } from '@/utils/types';
+import PropertiesListInfiniteScroll from './PropertiesListInfiniteScroll';
 
 const PropertiesContainer = async ({
   category,
@@ -10,7 +10,15 @@ const PropertiesContainer = async ({
   category?: string;
   search?: string;
 }) => {
-  const properties: PropertyCardProps[] = await fetchProperties({
+  const {
+    properties,
+    hasMore,
+    nextCursor,
+  }: {
+    properties: PropertyCardProps[];
+    hasMore: boolean;
+    nextCursor: string | null;
+  } = await fetchProperties({
     category,
     search,
   });
@@ -24,7 +32,16 @@ const PropertiesContainer = async ({
       />
     );
   }
-  return <PropertiesList properties={properties} />;
+
+  return (
+    <PropertiesListInfiniteScroll
+      initialProperties={properties}
+      initialHasMore={hasMore}
+      initialNextCursor={nextCursor}
+      category={category}
+      search={search}
+    />
+  );
 };
 
 export default PropertiesContainer;

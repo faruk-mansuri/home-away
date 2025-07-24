@@ -54,6 +54,9 @@ const SinglePropertyPage = async ({
     country,
     price,
     bookings,
+    favoriteId,
+    reviewCount,
+    rating,
   } = property;
   const details = { baths, bedrooms, beds, guests };
 
@@ -76,7 +79,10 @@ const SinglePropertyPage = async ({
           {/* share button */}
           <ShareButton propertyId={propertyId} name={name} />
 
-          <FavoriteToggleButton propertyId={propertyId} />
+          <FavoriteToggleButton
+            favoriteId={favoriteId}
+            propertyId={propertyId}
+          />
         </div>
       </header>
 
@@ -86,7 +92,7 @@ const SinglePropertyPage = async ({
         <div className='lg:col-span-8'>
           <div className='flex gap-4 place-items-center'>
             <h1 className='text-xl font-bold'>{name}</h1>
-            <PropertyRating inPage={true} propertyId={propertyId} />
+            <PropertyRating count={reviewCount} rating={rating} inPage={true} />
           </div>
           <PropertyDetails details={details} />
           <UserInfo profile={{ firstName, profileImage }} />
