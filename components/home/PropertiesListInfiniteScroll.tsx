@@ -12,6 +12,19 @@ interface PropertiesListInfiniteScrollProps {
   initialNextCursor: string | null;
   category?: string;
   search?: string;
+  action: ({
+    search,
+    category,
+    cursorId,
+  }: {
+    search?: string;
+    category?: string;
+    cursorId?: string;
+  }) => Promise<{
+    hasMore: boolean;
+    nextCursor: string | null;
+    properties: PropertyCardProps[];
+  }>;
 }
 
 const PropertiesListInfiniteScroll = ({
@@ -20,6 +33,7 @@ const PropertiesListInfiniteScroll = ({
   initialNextCursor,
   category = '',
   search = '',
+  action,
 }: PropertiesListInfiniteScrollProps) => {
   const [properties, setProperties] =
     useState<PropertyCardProps[]>(initialProperties);
@@ -44,7 +58,8 @@ const PropertiesListInfiniteScroll = ({
       const result = await loadMorePropertiesAction(
         search,
         category,
-        nextCursor
+        nextCursor,
+        action
       );
 
       if (result.success && result.data) {
