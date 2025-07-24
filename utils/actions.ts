@@ -283,10 +283,11 @@ export const fetchProperties = async ({
 export async function loadMorePropertiesAction(
   search: string = '',
   category: string = '',
-  cursorId: string = ''
+  cursorId: string = '',
+  action: any
 ) {
   try {
-    const result = await fetchProperties({
+    const result = await action({
       search: search || undefined,
       category: category || undefined,
       cursorId: cursorId || undefined,
@@ -354,10 +355,16 @@ export const toggleFavoriteAction = async (prevState: {
   }
 };
 
-export const fetchFavorites = async () => {
-  const user = await getAuthUser();
+export const fetchFavorites = async ({
+  cursorId,
+  limit = 8,
+}: {
+  cursorId?: string;
+  limit?: number;
+}) => {
+  const { id: userId } = await getAuthUser();
   const favorites = await db.favorite.findMany({
-    where: { profileId: user.id },
+    where: { profileId: userId },
     select: {
       id: true,
       property: {
@@ -376,9 +383,19 @@ export const fetchFavorites = async () => {
         },
       },
     },
+    take: limit + 1,
+    ...(cursorId && {
+      skip: 1,
+      cursor: {
+        id: cursorId,
+      },
+    }),
   });
 
-  return favorites.map((fav) => {
+  const hasMore = favorites.length > limit;
+  const data = hasMore ? favorites.slice(0, limit) : favorites;
+
+  const formattedData = data.map((fav) => {
     const reviewCount = fav.property.reviews.length;
     const rating =
       fav.property.reviews.reduce((acc, cur) => {
@@ -386,6 +403,12 @@ export const fetchFavorites = async () => {
       }, 0) ?? 0;
     return { ...fav.property, favoriteId: fav.id, reviewCount, rating };
   });
+
+  return {
+    properties: formattedData,
+    hasMore,
+    nextCursor: hasMore ? data[data.length - 1].id : null,
+  };
 };
 
 export const fetchPropertyDetailsById = async (id: string) => {
