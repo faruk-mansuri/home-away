@@ -10,6 +10,9 @@ export type PropertyCardProps = {
   tagline: string;
   country: string;
   price: number;
+  favoriteId: string | null;
+  rating: number;
+  reviewCount: number;
 };
 
 export type DateRangeSelect = {

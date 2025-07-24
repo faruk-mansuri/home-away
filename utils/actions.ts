@@ -176,28 +176,35 @@ export const createPropertyAction = async (
 export const fetchProperties = async ({
   search = '',
   category,
+  cursorId,
+  limit = 8,
 }: {
   search?: string;
   category?: string;
+  cursorId?: string;
+  limit?: number;
 }) => {
-  // if search in undefined then e will not get any property
-  return await db.property.findMany({
+  const { userId } = await auth();
+
+  const properties = await db.property.findMany({
     where: {
-      OR: [
-        {
-          name: {
-            contains: search,
-            mode: 'insensitive',
+      ...(search && {
+        OR: [
+          {
+            name: {
+              contains: search,
+              mode: 'insensitive',
+            },
           },
-        },
-        {
-          tagline: {
-            contains: search,
-            mode: 'insensitive',
+          {
+            tagline: {
+              contains: search,
+              mode: 'insensitive',
+            },
           },
-        },
-      ],
-      category,
+        ],
+      }),
+      ...(category && { category }),
     },
 
     select: {
@@ -207,15 +214,90 @@ export const fetchProperties = async ({
       image: true,
       country: true,
       price: true,
+
+      // Include rating data
+      reviews: {
+        select: {
+          rating: true,
+        },
+      },
+
+      // Include favorite status if user is logged in
+      ...(userId && {
+        favorites: {
+          where: {
+            profileId: userId,
+          },
+          select: {
+            id: true,
+          },
+        },
+      }),
     },
 
-    take: 10, // Limit to 10 properties
+    take: limit + 1,
+    ...(cursorId && {
+      skip: 1,
+      cursor: {
+        id: cursorId,
+      },
+    }),
 
     orderBy: {
       createdAt: 'desc',
     },
   });
+
+  const hasMore = properties.length > limit;
+  const data = hasMore ? properties.slice(0, limit) : properties;
+
+  // Transform data to include favoriteId
+  const transformedData = data.map((property) => {
+    const reviews = property.reviews || [];
+    const rating =
+      reviews.length > 0
+        ? (
+            reviews.reduce((sum, review) => sum + review.rating, 0) /
+            reviews.length
+          ).toFixed(1)
+        : '0';
+    const count = reviews.length;
+
+    return {
+      ...property,
+      rating: parseFloat(rating) ?? 0,
+      reviewCount: count ?? 0,
+      favoriteId: property.favorites?.[0]?.id || null,
+      reviews: undefined, // Remove reviews array
+      favorites: undefined, // Remove favorites array
+    };
+  });
+
+  return {
+    properties: transformedData,
+    hasMore,
+    nextCursor: hasMore ? data[data.length - 1].id : null,
+  };
 };
+
+export async function loadMorePropertiesAction(
+  search: string = '',
+  category: string = '',
+  cursorId: string = ''
+) {
+  try {
+    const result = await fetchProperties({
+      search: search || undefined,
+      category: category || undefined,
+      cursorId: cursorId || undefined,
+    });
+
+    return { success: true, data: result };
+  } catch (error) {
+    console.error('Error fetching properties:', error);
+    return { success: false, error: 'Failed to fetch properties' };
+  }
+}
 
 export const fetchFavoriteId = async ({
   propertyId,
@@ -286,19 +368,33 @@ export const fetchFavorites = async () => {
           image: true,
           country: true,
           price: true,
+          reviews: {
+            select: {
+              rating: true,
+            },
+          },
         },
       },
     },
   });
 
-  return favorites.map((fav) => fav.property);
+  return favorites.map((fav) => {
+    const reviewCount = fav.property.reviews.length;
+    const rating =
+      fav.property.reviews.reduce((acc, cur) => {
+        return acc + cur.rating;
+      }, 0) ?? 0;
+    return { ...fav.property, favoriteId: fav.id, reviewCount, rating };
+  });
 };
 
 export const fetchPropertyDetailsById = async (id: string) => {
-  return db.property.findUnique({
+  const { userId } = await auth();
+  const property = await db.property.findUnique({
     where: {
       id,
     },
+
     include: {
       profile: true,
       bookings: {
@@ -307,8 +403,41 @@ export const fetchPropertyDetailsById = async (id: string) => {
           checkOut: true,
         },
       },
+
+      // Include rating data
+      reviews: {
+        select: {
+          rating: true,
+        },
+      },
+
+      // Include favorite status if user is logged in
+      ...(userId && {
+        favorites: {
+          where: {
+            profileId: userId,
+          },
+          select: {
+            id: true,
+          },
+        },
+      }),
     },
   });
+
+  if (!property) return redirect('/');
+
+  return {
+    ...property,
+    favorites: undefined,
+    reviews: undefined,
+    favoriteId: property.favorites?.[0]?.id || null,
+    reviewCount: property.reviews.length ?? 0,
+    rating:
+      property.reviews.reduce((acc, cur) => {
+        return acc + cur.rating;
+      }, 0) ?? 0,
+  };
 };
 
 export const createReviewAction = async (
